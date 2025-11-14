@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Contract Compliance Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        
+        .upload-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .file-input {
+            margin: 20px 0;
+        }
+        
+        input[type="file"] {
+            padding: 10px;
+            border: 2px dashed #667eea;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .compliance-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .risk-high {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .risk-medium {
+            border-left: 4px solid #ffc107;
+        }
+        
+        .risk-low {
+            border-left: 4px solid #28a745;
+        }
+        
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .status-compliant {
+            color: #28a745;
+        }
+        
+        .status-non-compliant {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 AI-Powered Contract Compliance Checker</h1>
+        <p class="subtitle">Automated contract analysis for GDPR, HIPAA, and regulatory compliance</p>
+        
+        <div class="upload-section">
+            <h2>Upload Contract Document</h2>
+            <div class="file-input">
+                <input type="file" id="fileInput" accept=".pdf,.docx,.txt">
+            </div>
+            <button onclick="uploadFile()" id="uploadBtn">📤 Upload</button>
+            <button onclick="analyzeContract()" id="analyzeBtn" disabled>🔍 Analyze Contract</button>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>Analysis Results</h2>
+            
+            <div id="complianceSection">
+                <h3>Compliance Status</h3>
+                <div id="complianceResults"></div>
+            </div>
+            
+            <div id="risksSection">
+                <h3>Identified Risks</h3>
+                <div id="riskResults"></div>
+            </div>
+            
+            <div id="clausesSection">
+                <h3>Extracted Clauses</h3>
+                <div id="clauseResults"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let uploadedFilename = '';
+        
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+            
+            // Simulate upload
+            uploadedFilename = file.name;
+            document.getElementById('uploadBtn').disabled = true;
+            document.getElementById('analyzeBtn').disabled = false;
+            alert('✅ File uploaded successfully: ' + file.name);
+        }
+        
+        function analyzeContract() {
+            if (!uploadedFilename) {
+                alert('Please upload a file first');
+                return;
+            }
+            
+            // Simulate analysis with demo data
+            const demoResults = {
+                compliance: {
+                    GDPR: { compliant: true, score: 85, missing: [] },
+                    HIPAA: { compliant: false, score: 60, missing: ['PHI protection clause', 'Business associate agreement'] }
+                },
+                risks: [
+                    { severity: 'high', clause: 'data_protection', description: 'Missing explicit consent mechanism' },
+                    { severity: 'medium', clause: 'liability', description: 'Liability clause needs review' },
+                    { severity: 'low', clause: 'termination', description: 'Termination notice period is short' }
+                ],
+                clauses: {
+                    payment_terms: ['Payment due within 30 days'],
+                    termination: ['30-day notice required'],
+                    data_protection: ['GDPR compliant data processing'],
+                    liability: ['Limited to contract value']
+                }
+            };
+            
+            displayResults(demoResults);
+        }
+        
+        function displayResults(data) {
+            // Show results section
+            document.getElementById('results').classList.add('show');
+            
+            // Display compliance
+            let complianceHTML = '';
+            for (const [standard, info] of Object.entries(data.compliance)) {
+                const statusClass = info.compliant ? 'status-compliant' : 'status-non-compliant';
+                const statusText = info.compliant ? '✅ Compliant' : '❌ Non-Compliant';
+                
+                complianceHTML += `
+                    <div class="compliance-card">
+                        <h4>${standard}</h4>
+                        <p class="score">Score: ${info.score}%</p>
+                        <p class="${statusClass}">${statusText}</p>
+                        ${info.missing.length > 0 ? `
+                            <p><strong>Missing:</strong></p>
+                            <ul>
+                                ${info.missing.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            document.getElementById('complianceResults').innerHTML = complianceHTML;
+            
+            // Display risks
+            let risksHTML = '';
+            data.risks.forEach(risk => {
+                risksHTML += `
+                    <div class="compliance-card risk-${risk.severity}">
+                        <h4>${risk.clause.replace('_', ' ').toUpperCase()}</h4>
+                        <p><strong>Severity:</strong> ${risk.severity.toUpperCase()}</p>
+                        <p>${risk.description}</p>
+                    </div>
+                `;
+            });
+            document.getElementById('riskResults').innerHTML = risksHTML;
+            
+            // Display clauses
+            let clausesHTML = '<ul>';
+            for (const [type, items] of Object.entries(data.clauses)) {
+                clausesHTML += `<li><strong>${type.replace('_', ' ').toUpperCase()}:</strong> ${items.join(', ')}</li>`;
+            }
+            clausesHTML += '</ul>';
+            document.getElementById('clauseResults').innerHTML = clausesHTML;
+        }
+    </script>
+</body>
+</html>
